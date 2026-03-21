@@ -2,12 +2,18 @@
 
 A small CLI tool to save and restore monitor configurations on Windows. Useful for setups where you frequently switch between different display arrangements (e.g., docked vs. undocked, single vs. multi-monitor).
 
-## Requirements
+## Installation
 
-- Windows 10/11
-- [Rust toolchain](https://rustup.rs/) (to build from source)
+### Scoop (recommended)
 
-## Build
+```bash
+scoop bucket add wsm https://github.com/OsirisFrik/scoop-windows-screen-manager
+scoop install wsm
+```
+
+### Build from source
+
+Requirements: Windows 10/11 and the [Rust toolchain](https://rustup.rs/).
 
 ```bash
 cargo build --release
