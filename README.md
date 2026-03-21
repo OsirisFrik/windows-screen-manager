@@ -2,7 +2,7 @@
 
 A small CLI tool to save and restore monitor configurations on Windows. Useful for setups where you frequently switch between different display arrangements (e.g., docked vs. undocked, single vs. multi-monitor).
 
-<video src="https://github.com/OsirisFrik/windows-screen-manager/raw/refs/heads/main/demo.webm" controls title="wsm demo"></video>
+<video src="./demo.mp4" controls title="wsm demo" width="70%"></video>
 
 ## Installation
 
