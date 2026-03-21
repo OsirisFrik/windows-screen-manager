@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build and release
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Build release binary
+        run: cargo build --release --target x86_64-pc-windows-msvc
+
+      - name: Compute SHA256 checksum
+        shell: pwsh
+        run: |
+          $hash = (Get-FileHash target\x86_64-pc-windows-msvc\release\wsm.exe -Algorithm SHA256).Hash.ToLower()
+          $hash | Out-File -FilePath wsm.exe.sha256 -Encoding ascii -NoNewline
+          Write-Output "SHA256: $hash"
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            target/x86_64-pc-windows-msvc/release/wsm.exe
+            wsm.exe.sha256
+          generate_release_notes: true
+
+      - name: Upload hash as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sha256
+          path: wsm.exe.sha256
+
+  update-scoop-bucket:
+    name: Update Scoop bucket
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download hash artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: sha256
+
+      - name: Checkout bucket repo
+        uses: actions/checkout@v4
+        with:
+          repository: OsirisFrik/scoop-windows-screen-manager
+          token: ${{ secrets.SCOOP_BUCKET_TOKEN }}
+          path: bucket
+
+      - name: Update manifest
+        shell: bash
+        run: |
+          VERSION=${GITHUB_REF_NAME#v}
+          HASH=$(cat wsm.exe.sha256)
+
+          jq \
+            --arg version "$VERSION" \
+            --arg hash "sha256:$HASH" \
+            --arg url "https://github.com/OsirisFrik/windows-screen-manager/releases/download/v${VERSION}/wsm.exe" \
+            '.version = $version | .architecture["64bit"].url = $url | .architecture["64bit"].hash = $hash' \
+            bucket/wsm.json > bucket/wsm.tmp.json
+
+          mv bucket/wsm.tmp.json bucket/wsm.json
+
+      - name: Commit and push
+        working-directory: bucket
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wsm.json
+          git commit -m "wsm: update to ${GITHUB_REF_NAME}"
+          git push
