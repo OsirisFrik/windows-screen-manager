@@ -2,7 +2,7 @@
 
 A small CLI tool to save and restore monitor configurations on Windows. Useful for setups where you frequently switch between different display arrangements (e.g., docked vs. undocked, single vs. multi-monitor).
 
-<video src="demo.webm" controls title="wsm demo"></video>
+<video src="https://github.com/OsirisFrik/windows-screen-manager/raw/refs/heads/main/demo.webm" controls title="wsm demo"></video>
 
 ## Installation
 
@@ -64,16 +64,16 @@ Configuration applied successfully.
 
 Each monitor entry in the JSON file includes:
 
-| Field | Description |
-|---|---|
-| `device_name` | Windows adapter name, e.g. `\\.\DISPLAY1` |
-| `friendly_name` | Human-readable label derived from hardware ID and index |
-| `position_x / y` | Virtual desktop position in pixels |
-| `width / height` | Resolution in pixels |
-| `refresh_rate` | Refresh rate in Hz |
-| `bits_per_pel` | Color depth (typically 32) |
-| `orientation` | Rotation: `0`=0°, `1`=90°, `2`=180°, `3`=270° |
-| `is_primary` | Whether this is the primary display |
+| Field            | Description                                             |
+| ---------------- | ------------------------------------------------------- |
+| `device_name`    | Windows adapter name, e.g. `\\.\DISPLAY1`               |
+| `friendly_name`  | Human-readable label derived from hardware ID and index |
+| `position_x / y` | Virtual desktop position in pixels                      |
+| `width / height` | Resolution in pixels                                    |
+| `refresh_rate`   | Refresh rate in Hz                                      |
+| `bits_per_pel`   | Color depth (typically 32)                              |
+| `orientation`    | Rotation: `0`=0°, `1`=90°, `2`=180°, `3`=270°           |
+| `is_primary`     | Whether this is the primary display                     |
 
 Example `config.json`:
 
