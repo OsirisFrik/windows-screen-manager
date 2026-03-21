@@ -2,6 +2,8 @@
 
 A small CLI tool to save and restore monitor configurations on Windows. Useful for setups where you frequently switch between different display arrangements (e.g., docked vs. undocked, single vs. multi-monitor).
 
+<video src="demo.webm" controls title="wsm demo"></video>
+
 ## Installation
 
 ### Scoop (recommended)
