@@ -23,44 +23,71 @@ The binary will be at `target/release/wsm.exe`.
 
 ## Usage
 
-### Save current configuration
+### Save current configuration with a profile alias
 
-Reads all active monitors and writes their settings to a JSON file.
+Reads all active monitors and saves them to `~/.wsm-profiles` with a profile alias (default YAML format).
 
 ```bash
-wsm save                  # saves to config.json (default)
-wsm save my-setup.json    # saves to a custom file
+wsm save office           # save as "office" profile
+wsm save office --json    # save as "office" profile in JSON format
+wsm save office --output my-config.yaml         # save to custom file (YAML)
+wsm save office --output my-config.json --json  # save to custom file (JSON)
 ```
 
 Example output:
 
 ```
-Saved 2 monitor(s) to config.json
+Saved 2 monitor(s) to profile 'office' in ~/.wsm-profiles (YAML)
   Display 1: GS34WQCA                     3440x1440 @ 144Hz  pos (    0,     0)  primary: true
   Display 2: P2419H                       1920x1080 @  60Hz  pos ( 3440,   180)  primary: false
 ```
 
-### Load a saved configuration
+### Load a saved profile
 
-Reads a JSON file and applies all monitor settings atomically.
+Applies a saved profile configuration atomically.
 
 ```bash
-wsm load config.json
-wsm load my-setup.json
+wsm load office                         # load profile from ~/.wsm-profiles
+wsm load office --source my-config.yaml # load profile from external file
 ```
 
 Example output:
 
 ```
-Applying 2 monitor configuration(s) from config.json...
+Applying 2 monitor configuration(s) from profile 'office'...
   Display 1: GS34WQCA — 3440x1440 @ 144Hz staged OK
   Display 2: P2419H — 1920x1080 @ 60Hz staged OK
 Configuration applied successfully.
 ```
 
+### List all profiles
+
+```bash
+wsm list
+```
+
+Example output:
+
+```
+Saved profiles in ~/.wsm-profiles:
+  office — 2 monitor(s)
+    Display 1: GS34WQCA                     3440x1440 @ 144Hz  pos (    0,     0)  primary: true
+    Display 2: P2419H                       1920x1080 @  60Hz  pos ( 3440,   180)  primary: false
+  home — 1 monitor(s)
+    Display 1: P2419H                       1920x1080 @  60Hz  pos (    0,     0)  primary: true
+```
+
+### Delete a profile
+
+```bash
+wsm delete office
+```
+
 ## What gets saved
 
-Each monitor entry in the JSON file includes:
+Profiles are stored in `~/.wsm-profiles` (YAML by default, or JSON with `--json` flag).
+
+Each monitor entry includes:
 
 | Field            | Description                                             |
 | ---------------- | ------------------------------------------------------- |
@@ -73,23 +100,32 @@ Each monitor entry in the JSON file includes:
 | `orientation`    | Rotation: `0`=0°, `1`=90°, `2`=180°, `3`=270°           |
 | `is_primary`     | Whether this is the primary display                     |
 
-Example `config.json`:
+Example YAML format (`.wsm-profiles`):
 
-```json
-[
-  {
-    "device_name": "\\\\.\\DISPLAY1",
-    "friendly_name": "Display 1: GS34WQCA",
-    "position_x": 0,
-    "position_y": 0,
-    "width": 3440,
-    "height": 1440,
-    "refresh_rate": 144,
-    "bits_per_pel": 32,
-    "orientation": 0,
-    "is_primary": true
-  }
-]
+```yaml
+profiles:
+  office:
+    monitors:
+      - device_name: '\\.\DISPLAY1'
+        friendly_name: 'Display 1: GS34WQCA'
+        position_x: 0
+        position_y: 0
+        width: 3440
+        height: 1440
+        refresh_rate: 144
+        bits_per_pel: 32
+        orientation: 0
+        is_primary: true
+      - device_name: '\\.\DISPLAY2'
+        friendly_name: 'Display 2: P2419H'
+        position_x: 3440
+        position_y: 180
+        width: 1920
+        height: 1080
+        refresh_rate: 60
+        bits_per_pel: 32
+        orientation: 0
+        is_primary: false
 ```
 
 ## Notes
